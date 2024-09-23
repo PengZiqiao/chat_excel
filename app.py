@@ -60,6 +60,8 @@ def clean_history(history):
     return messages
 
 def chat(query, history):
+    global agent
+    
     history.append(ChatMessage(role='user', content=query))
     yield "", history
 
@@ -96,4 +98,4 @@ with gr.Blocks() as demo:
 
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    demo.queue().launch(share=True)

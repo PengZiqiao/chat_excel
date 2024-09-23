@@ -4,8 +4,6 @@ import re
 from typing import Annotated
 
 
-import logging
-
 def create_tool(file_path):
     sandbox, dhead = create_code_sandbox(file_path)
 
@@ -28,8 +26,10 @@ def create_code_sandbox(file_path):
     sandbox = CodeSandBox()
     code = '\n'.join((
         "import matplotlib.pyplot as plt",
+        "import matplotlib as mpl",
         "import pandas as pd",
-        "plt.rcParams['font.sans-serif']=['SimHei']",
+        "mpl.font_manager.fontManager.addfont('simhei.ttf')",
+        "mpl.rc('font', family='SimHei')",
         "plt.rcParams['axes.unicode_minus']=False",
         f"df = pd.read_excel('{file_path}')",
         "print(df.head().to_markdown())"
@@ -49,7 +49,7 @@ def parse_tool_input(tool_input):
         raw_text.replace(r'\n', '<br/>'),
         "```"
     ))
-    print(code)
+
     return code
 
 def code_execute(code, sandbox):

@@ -7,7 +7,7 @@ from model import llm
 
 
 def create_prompt_template(dhead):
-    system_prompt = load_prompt("prompt_templates/dataminer.yaml")
+    system_prompt = load_prompt("dataminer.yaml")
 
     return ChatPromptTemplate([
         ("system", system_prompt.format(dhead=dhead)), 
@@ -37,7 +37,6 @@ def agent_execute(agent, query, history):
         messages.append(HumanMessage(content=human_message))
         messages.append(AIMessage(content=ai_message))
     messages.append(HumanMessage(content=query))
-    # print(messages)
 
     # 调用agent
     for chunk in agent.stream({'messages': messages}):
@@ -88,6 +87,17 @@ def agent_execute(agent, query, history):
                         'observation': content
                     }
                 }
+                
+                # 如果结果是保存了图片，再额外返回图片地址
+                if observation == '图片已生成，请提示用户查看。':
+                    file_path = 'plot.png'
+                    yield {
+                        'type': 'image',
+                        'data': {
+                            'file_path': file_path
+                        }
+                    }
+
             else:
                 # 普通文本消息，将消息中表示图片的markdown去掉，反正又不能正常显示
                 content = remove_image_markdown(output)
